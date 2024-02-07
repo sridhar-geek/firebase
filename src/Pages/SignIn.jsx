@@ -1,3 +1,4 @@
+/**SignUp page , Register new user to app */
 import {
   Box,
   Button,
@@ -13,18 +14,15 @@ import MailIcon from "@mui/icons-material/Mail";
 import KeyIcon from "@mui/icons-material/Key";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
-import PersonIcon from '@mui/icons-material/Person';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 //imports from another files
 import Logo from "../assests/firebaseLogo.png";
-import { app } from "../firebase";
-import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import OtherAuthentication from "../Components/OtherAuthentication";
+import Header from "../Components/Header/Header";
 //component styles
 const Container = styled(Box)`
   display: flex;
@@ -41,33 +39,32 @@ const InputBox = styled(Box)`
   gap: 2%;
   padding: 10px;
 `;
-const Login = () => {
+const SignUp = () => {
   // handles hide and unhide
   const [showPassword, setShowPassword] = useState(false);
   const [showConformPassword, setShowConformPassword] = useState(false);
   // stores data of user (email, password,name)
-  const [name, setName] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [conformPassword, setConformPassword] = useState("");
 
-  const auth = getAuth(app);
   const navigate = useNavigate();
-  //a function for registring of an user
+  //function for registering an user
   const handleRegister = async (e) => {
     e.preventDefault();
-    if(password != conformPassword) return toast.error("passwords don't match", {
-      position: "top-center",
-      theme: "dark",
-    });
+    if (password != conformPassword)
+      return toast.error("passwords don't match", {
+        position: "top-center",
+        theme: "dark",
+      });
     try {
-      const user = await createUserWithEmailAndPassword(auth, name,email, password);
+      const user = await createUserWithEmailAndPassword(auth, email, password);
       toast.success("Registration Success", {
         position: "top-center",
         theme: "dark",
       });
       console.log(user, "from registration function");
-      navigate('/login')
+      navigate("/login");
     } catch (error) {
       toast.error(error?.message, {
         position: "top-center",
@@ -77,14 +74,17 @@ const Login = () => {
   };
 
   return (
+    <>
+    <Header />
     <Container height="100vh" width="100%">
       <Box
         border="2px solid white"
         width="30%"
         padding="10px"
         borderRadius="15px"
+        minWidth="400px"
       >
-        <Container display="flex" justifyContent="center" alignItems="center">
+        <Container>
           <img
             src={Logo}
             alt="logo"
@@ -94,18 +94,6 @@ const Login = () => {
           />
         </Container>
         <form onSubmit={handleRegister}>
-          <InputBox>
-            <PersonIcon />
-            <InputFeild
-              variant="filled"
-              type="text"
-              value={name}
-              required
-              onChange={(e) => setName(e.target.value)}
-              fullWidth
-              placeholder="Name"
-            />
-          </InputBox>
           <InputBox>
             <MailIcon />
             <InputFeild
@@ -181,47 +169,16 @@ const Login = () => {
             </Link>
           </Typography>
 
-          <Button
-            variant="contained"
-            type="submit"
-            fullWidth
-            sx={{ textTransform: "capitalize" }}
-          >
-            SigIn
+          <Button variant="contained" type="submit" fullWidth>
+            SignUp
           </Button>
         </form>
         <Divider sx={{ margin: "10px" }} />
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#2f4e87",
-            textTransform: "capitalize",
-            ":hover": {
-              backgroundColor: "#242f45",
-            },
-          }}
-          fullWidth
-        >
-          <GoogleIcon sx={{ marginRight: "5px" }} />
-          Login with Google
-        </Button>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#883ad6",
-            margin: " 20px 0px",
-            textTransform: "capitalize",
-            ":hover": {
-              backgroundColor: "#482769",
-            },
-          }}
-          fullWidth
-        >
-          <GitHubIcon sx={{ marginRight: "5px" }} /> Login with Github
-        </Button>
+        <OtherAuthentication />
       </Box>
     </Container>
+    </>
   );
 };
 
-export default Login;
+export default SignUp;
